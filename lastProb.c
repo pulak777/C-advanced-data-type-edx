@@ -16,54 +16,39 @@ struct digit *readNumber(void);
 int divisibleByThree(struct digit * start);
 int changeThrees(struct digit * start);
 int countRedun(struct digit *);
+struct digit * addNumber(struct digit *);
+
 
 
 // Do not modify this main() function
 int main(void) {
     struct digit *start;
     start = readNumber();
+    struct digit *ptr;
+    ptr = start;
+    while(ptr->next != NULL)
+
+    //made circular linked list
+    ptr = ptr->next;
+    ptr->next = start;
 
     printf("The number ");
     printNumber(start);
-    printf("contains %d redundancies.\n", countRedun(start));
+    //printf("contains %d redundancies.\n", countRedun(start));
+
+    //inserting element into the circular linked list
+    int n;
+    printf("Enter the number of values to be added ");
+    scanf("%d", &n);
+    for(int i = 0; i < n; i++){
+        start = addNumber(start);
+        printNumber(start);
+    }
 
     freeNumber(start);
 
     return 0;
 }
-
-struct digit *createDigit(int dig) {
-    struct digit *ptr;
-    ptr = (struct digit *) malloc(sizeof(struct digit));
-    ptr->num = dig;
-    ptr->next = NULL;
-    return ptr;
-}
-
-struct digit * append(struct digit * end, struct digit * newDigptr) {
-    end->next = newDigptr;
-    return(end->next);
-}
-
-void printNumber(struct digit *start) {
-    struct digit * ptr = start;
-    while (ptr!=NULL) {
-        printf("%d", ptr->num);
-        ptr = ptr->next;
-    }
-    printf("\n");
-}
-
-void freeNumber(struct digit *start) {
-    struct digit * ptr = start;
-    struct digit * tmp;
-    while (ptr!=NULL) {
-        tmp = ptr->next;
-        free(ptr);
-        ptr = tmp;
-    }
-}
-
 struct digit *readNumber(void) {
     char c;
     int d;
@@ -83,6 +68,71 @@ struct digit *readNumber(void) {
     }
     return(start);
 }
+
+struct digit *createDigit(int dig) {
+    struct digit *ptr;
+    ptr = (struct digit *) malloc(sizeof(struct digit));
+    ptr->num = dig;
+    ptr->next = NULL;
+    return ptr;
+}
+
+struct digit * append(struct digit * end, struct digit * newDigptr) {
+    end->next = newDigptr;
+    return(end->next);
+}
+
+void printNumber(struct digit *start) {
+    struct digit * ptr = start;
+    while (ptr->next != start) {
+        printf("%d", ptr->num);
+        ptr = ptr->next;
+    }
+    printf("%d", ptr->num);
+    printf("\n");
+}
+
+struct digit * addNumber(struct digit * start){
+    int n, num;
+    printf("Enter the position where the number is to be added and the number to be added: ");
+    scanf("%d %d", &n, &num);
+    if(n == 1){
+        struct digit *end = start;
+        while(end->next != start)
+        end = end->next;
+        struct digit *numptr;
+        numptr = (struct digit *) malloc(sizeof(struct digit));
+        numptr->num = num;
+        numptr->next = start;
+        end->next = numptr;
+        return numptr;
+    }
+    struct digit *tmp = start;
+    int i = 2;
+    while(i < n){
+        tmp = tmp->next;
+        i++;
+    }
+    struct digit *numptr;
+    numptr = (struct digit *) malloc(sizeof(struct digit));
+    numptr->num = num;
+    numptr->next = tmp->next;
+    tmp->next = numptr;
+    return start;    
+}
+    
+
+void freeNumber(struct digit *start) {
+    struct digit * ptr = start;
+    struct digit * tmp;
+    while (ptr->next != start) {
+        tmp = ptr->next;
+        free(ptr);
+        ptr = tmp;
+    }
+}
+
+
 
 int divisibleByThree(struct digit * start) {
     struct digit * ptr = start;
